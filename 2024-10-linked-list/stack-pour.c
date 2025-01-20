@@ -15,7 +15,7 @@ void push(node* head, int num) {
 }
 
 int pop(node* head) {
-    int num = head->num;
+    int num = head->next->num;
     node* p = head->next;
     head->next = p->next;
     free(p);
@@ -28,6 +28,7 @@ bool is_empty(node* head) {
 
 void init(node** head, int n) {
     for(int i = 0; i < n; i++) {
+        head[i] = malloc(sizeof(node));
         head[i]->next = NULL;
         push(head[i], i + 1);
     }
@@ -44,18 +45,20 @@ void display(node** head, int n) {
     for(int i = 0; i < n; i++) {
         if(is_empty(head[i])) {
             printf("0\n");
-            continue;
         }
-        node* reverse = malloc(sizeof(node));
-        while(!is_empty(head[i])) {
-            int num = pop(head[i]);
-            push(reverse, num);
+        else  {
+            node* reverse = malloc(sizeof(node));
+            reverse->next = NULL;
+            while(!is_empty(head[i])) {
+                int num = pop(head[i]);
+                push(reverse, num);
+            }
+            while(!is_empty(reverse)) {
+                int num = pop(reverse);
+                printf("%d ", num);
+            }
+            printf("\n");
         }
-        while(!is_empty(reverse)) {
-            int num = pop(reverse);
-            printf("%d ", num);
-        }
-        printf("\n");
     }
 }
 
@@ -73,7 +76,6 @@ void process(int n, int m) {
 int main() {
     int n, m;
     scanf("%d %d", &n, &m);
-    printf("%d %d haha\n", m, n);
     process(n, m);
     return 0;
 }
