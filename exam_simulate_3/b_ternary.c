@@ -1,73 +1,108 @@
 #include <stdio.h>
-#include <stdlib.h>
 
-void convert_d_to_t() {
+void convert_d() {
     char s[20];
     scanf("%s", s);
-    int sign = 1, i = 0;
-    if(s[0] == '-') {
+    int sign = 1;
+    int idx = 0;
+
+    if(s[idx] == '-') {
         sign = -1;
-        i = 1;
+        idx++;
     }
-    int sum = 0;
-    for(; s[i]; i++) {
-        if(s[i] < '0' || s[i] > '9') {
+
+    int num = 0;
+    while(s[idx]) {
+        if(s[idx] >= '0' && s[idx] <= '9')
+            num = 10 * num + s[idx] - '0';
+        else {
             printf("Radix Error\n");
             return;
         }
-        sum = 10 * sum + (s[i] - '0');
+        idx++;
     }
-    printf("sum %d ", sum);
-    if(sum == 0) {
-        printf("0\n");
+
+    if(num == 0) {
+        printf("0 0\n");
         return;
     }
-    int a[40];
-    i = 0;
-    while(sum != 0) {
-        a[i] = sum % 3;
-        i++;
-        sum = sum / 3;
+
+    printf("%d ", num * sign);
+
+    int t[30];
+    int idt = 0;
+    while(num > 0) {
+        t[idt++] = (num % 3);
+        num /= 3;
     }
-    a[i] = sum;
-    for(int j = 0; j <= i; j++)
-        printf("%d", a[j]);
-    printf(" ");
-    int carry = 0, j;
-    for(j = 0; j <= i; j++) {
-        a[j] += carry;
-        if(a[j] >= 2) {
-            a[j] -= 3;
+    t[idt] = 0;
+
+    // printf("ternary\n");
+    // for(int i = 0; i < idt; i++)
+    //     printf("%d ", t[i]);
+    // printf("\n");
+
+    int carry = 0;
+    for(int i = 0; i <= idt; i++) {
+        if(carry + t[i] <= 1) {
+            t[i] += carry;
+            carry = 0;
+        }
+        else if(carry + t[i] == 2) {
+            t[i] = -1;
+            carry = 1;
+        }
+        else {
+            t[i] = 0;
             carry = 1;
         }
     }
-    while(a[j] == 0) j--;
-    while(j >= 0) {
-        if(a[j] * sign == 1)
-            printf("1");
-        else if(a[j] * sign == -1)
+    while(t[idt] == 0)
+        idt--;
+    for(int i = 0; i <= idt; i++)
+        t[i] *= sign;
+    
+    while(idt >= 0) {
+        if(t[idt] == -1)
             printf("Z");
         else
-            printf("0");
-        j--;
+            printf("%d", t[idt]);
+        idt--;
     }
     printf("\n");
-    return;
 }
 
-void convert_t_to_d() {
-
+void convert_t() {
+    char s[20];
+    scanf("%s", s);
+    int sum = 0;
+    for(int i = 0; s[i]; i++) {
+        if(s[i] != '1' && s[i] != '0' && s[i] != 'Z') {
+            printf("Radix Error\n");
+            return;
+        }
+        if(s[i] == '1')
+            sum = 3 * sum + 1;
+        else if(s[i] == '0')
+            sum = 3 * sum;
+        else
+            sum = 3 * sum - 1;
+    }
+    printf("%d %s\n", sum, s);
 }
 
 int main() {
     int n;
     scanf("%d", &n);
-    while(n-- > 0) {
-        char s[10];
-        scanf("%s", s);
-        if(s[0] == 'd')
-            convert_d_to_t();
-        else
-            convert_t_to_d();
+    for(int i = 0; i < n; i++) {
+        char ops[2];
+        scanf("%s", ops);
+        if(ops[0] == 'd') {
+            convert_d();
+        }
+        else {
+            convert_t();
+        }
     }
+    return 0;
 }
