@@ -23,7 +23,7 @@ void display(list* l) {
 }
 
 list* init() {
-    char s[105];
+    char s[10005];
     scanf("%s", s);
     list* l = malloc(sizeof(list));
     l->head = malloc(sizeof(node));
@@ -40,23 +40,52 @@ list* init() {
 }
 
 bool match(node* p, node* q) {
-    node* r1 = p->next;
-    node* r2 = q;
-    while(r2->next != NULL) {
-        if(r1 != NULL && r1->ch == r2->ch) {
-            r1 = r1->next;
-            r2 = r2->next;
-        }
-        else break;
+    while(p != NULL && q != NULL && p->ch == q->ch) {
+        p = p->next;
+        q = q->next;
     }
-    if(r1 == NULL || r1->ch != r2->ch) return false;
-    r2->next = r1->next;
-    return true;
+    if(q == NULL) return true;
+    else return false;
+}
+
+void insert(node* p, node* q, list* r) {
+    node* head = malloc(sizeof(node));
+    head->next = NULL;
+    node* s = head;
+    node* r1 = r->head->next;
+    while(r1 != NULL) {
+        s->next = malloc(sizeof(node));
+        s = s->next;
+        s->ch = r1->ch;
+        s->next = NULL;
+        r1 = r1->next;
+    }
+    s->next = q;
+    p->next = head->next;
+    free(head);
 }
 
 void replace(list* s, list* r1, list* r2) {
     node* p = s->head;
-    
+    node* q = p->next;
+    while(q != NULL) {
+        if(match(q, r1->head->next)) {
+            node* r = r1->head->next;
+            while(r != NULL) {
+                node* q1 = q;
+                q = q->next;
+                free(q1);
+                r = r->next;
+            }
+            insert(p, q, r2);
+            while(p->next != q)
+                p = p->next;
+        }
+        else {
+            p = p->next;
+            q = q->next;
+        }
+    }
 }
 
 int main() {
@@ -76,5 +105,6 @@ int main() {
     }
 
     display(s);
+    
     return 0;
 }
